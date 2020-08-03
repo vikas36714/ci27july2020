@@ -1,0 +1,244 @@
+
+Extra Notes :- Vs Code extentions :-
+   1:- Live Server
+   2:- Php Inteliphense
+    etc.
+
+1: ----------------------------- Set envoirnment using .htaccess file --------------------------------
+
+path -> our root application
+
+    <IfModule mod_env.c>
+        SetEnv CI_ENV development
+    </IfModule>
+
+2: ---------------------- Set Default Controller ----------------------
+
+path -> application/config/routes.php
+
+    $route['default_controller'] = 'welcome'; //we can replace `welcome` to set another default_controller.
+
+3: ------------------------- Set Base Url ----------------------------
+
+    path -> application/config/config.php
+
+    $config['base_url'] = 'http://localhost/ci_projects/ci27july2020/';
+
+4: ---------------------------- Remove index.php from Url ----------------------------------
+
+    path -> application/config/config.php
+
+    $config['index_page'] = 'index.php'; //replace it with below one.
+
+    $config['index_page'] = '';
+
+    And add this below code in .htaccess root file ->
+
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^(.*)$ index.php/$1 [L]
+
+5: ------------------------- Set Auto load files --------------------------------
+
+    path -> application/config/autoload.php
+
+    $autoload['libraries'] = array(); //replace it with below one
+    $autoload['libraries'] = array('database', 'email', 'session');
+
+    $autoload['helper'] = array(); //replace it with below one
+    $autoload['helper'] = array('url', 'file');
+
+6: ------------------------- Set session data into custome file ------------------------------
+
+    path -> application/config/config.php
+
+    $config['sess_save_path'] = ''; //replace it with below one
+    $config['sess_save_path'] = 'C:\xampp\htdocs\sesstemp'; session file path.
+
+7: --------------------- Set session data into database ---------------------------
+
+    path -> application/config/config.php
+
+    $config['sess_driver'] = 'database';
+    $config['sess_cookie_name'] = 'ci_session'; // `ci_session` database table name.
+    $config['sess_save_path'] = 'ci_sessions';
+
+8: ---------------- Set Database configration ----------------------
+
+    path -> application/config/database.php
+
+    'hostname' => 'localhost',
+	'username' => 'root',
+	'password' => '',
+	'database' => 'ci27july2020',
+
+9:  -------------- SESSION MANAGEMENT ------------------- :-
+
+    a:- Set data into session -
+            $this->session->set_userdata('key', 'value);
+
+    b:- Get data from session --
+            $this->session->userdata('key');
+
+    c:- Set array into session -
+            $arr = ['id' => 1, 'name' => 'Ram' 'age' => 15];
+            $this->session->set_userdata($arr);
+
+    d:- Get array data from session --
+            $this->session->userdata('arrkey');
+
+    e:- Unset data from session -
+            $this->session->unset_userdata('email');
+
+    f:- Destroy session -
+            $this->session->sess_destroy();
+
+    g:- Set Flash data into session -
+            $this->session->set_flashdata('message', 'Record has been added.');
+
+    h:- Get flash data from session -
+            $this->session->flashdata('message'); //here `message` is a session data key.
+
+    i:- Set session data as a flash message -
+            $this->session->mark_as_flash('sesskey'); //here `sesskey` is a session data key.
+
+    j:- Set temp data into session for some seconds  -
+            $this->session->set_tempdata('dob', '28/07/2020', 200); //here `dob` is a session data key and `200` is a seconds time.
+
+    k:- Get temp data from session -
+            $this->session->tempdata('dob'); //here `dob` is a session data key.
+
+10: ---------------- Database Queries ----------------------
+
+    a:- Create model page into models folder and write this below code -
+
+        class ClassName extends CI_Model
+        {
+            public function functionName()
+            {
+                1:- $query = $this->db->get('tablename'); //fetch data from database.
+                            OR
+                2:- /*$query = $this->db->query('SELECT * FROM news'); //we can write `sql query` also in `query()` method.*/
+
+                3:- OR fetch specific fields from table -
+
+                    $this->db->select('title','description');     //return array type of data.
+
+                    $this->db->where('active',1);     // using `where` clause.
+
+                4:- Using `where` clause for `multiple conditions`. --
+                      $this->db->where(array('active',1, 'title' => 'technology'));
+
+                5:- Sort data using using `order_by` clause. ---
+                      $this->db->order_by('created_at', 'desc');
+
+                6:- limit data using using `limit()` method. ---
+                    $this->db->limit(2);
+
+                if($query->num_rows() > 0){
+                    return $query->result();     //return object type of data.
+                    return $query->result_array();     //return array type of data.
+                }
+            }
+        }
+
+    b:- Load created model in Controller `construct function` -
+
+        public function __construct()
+        {
+            parent::__construct();
+            $this->load->model('news_model');
+        }
+
+    c:- Get `data from model` in Controller methods -
+
+            $data['news'] = $this->news_model->get_news();   //`news_model` is model and `get_news()` is a model method.
+
+    d:- Insert Records in database table using this below query --
+
+            $this->db->insert('news', $newsdata);   //here `news` is a database table name and `$newsdata` is a data which is store in `news` table.
+
+     e:- Get inserted row `ID` from db table --
+
+            return $this->db->insert_id();   //return inserted row id.
+
+    f:- Get single row from from db table using `ID`--
+
+            $this->db->where('id', $id);
+            $query = $this->db->get('tablename');
+
+            return $query->row();   //return single row data;
+
+11:- --------------------------- Create a form in CI ----------------------------
+
+    a: First load `form` helper in construct method in Controller -
+            
+            $this->load->helper('form);
+
+        in view page ---
+
+            <?php echo form_open('users/signup', array('id' => 'signup_form', 'name'=>'signup_form', )); ?>
+
+            <?php echo form_close(); ?>
+    
+    b:-- Set Old input in CI --
+
+        <input type"text" name="first_name" value="<?php echo set_value('first_name'); ?>" />
+
+
+12:- ----------------------- Form Validation -------------------------
+
+    a: Load form_validation from library -
+
+        $this->load->library('form_validation');
+
+    Next :-- Set form Rules like below these :-
+
+        $this->form_validation->set_rules('first_name', 'Firstname', 'trim|required');
+        $this->form_validation->set_rules('last_name', 'Lastname', 'trim|required');
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[users.email]');
+        $this->form_validation->set_rules('password', 'Password', 'required');
+        $this->form_validation->set_rules('confirm_password', 'Confirm Password' ,'required|matches[password]');
+
+    Next:-- Set set_error_delimiters() like below this ----
+
+        $this->form_validation->set_error_delimiters('<div class="error">', '</div>');
+    
+    Next:-- Check form Validation true or false ---
+    
+        if($this->form_validation->run() == false) {
+            //
+        }else{
+            //
+        }
+
+13:- --------------------------Get Form values -------------------------
+
+       print_r($this->input->post());
+
+14:- ----------------------- File Uploading -----------------------------
+
+    Search for code - https://codeigniter.com/userguide3/libraries/file_uploading.html
+
+15:- ------------------------- Set Custome Message in Form Validation --------------------------------
+
+    $this->form_validation->set_message('passwordCheck', 'The Old Password field is required');
+
+===========================================================================================================
+
+    ########################## GIT Set Up Steps #####################################
+
+1: Initialize Git.
+
+2: Commit.
+
+3: Config Git (if ask).
+
+4: Add Remote.
+
+5: Push.
+
+6: Fill Git Hub account credentials.
+
+7: Push again (if required).
