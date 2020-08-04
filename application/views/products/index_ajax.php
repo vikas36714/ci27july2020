@@ -21,7 +21,7 @@
                             <td><?php echo $product->sku  ?></td>
                             <td><?php echo $product->price  ?></td>
                             <td>
-                                <?php echo ($product->active) ? '<span class="label label-success">Enabled</span>' : '<span class="label label-danger">Disabled</span>' ?>
+                                <?php echo ($product->is_active) ? '<span class="label label-success">Enabled</span>' : '<span class="label label-danger">Disabled</span>' ?>
                             </td>
                             <td><?php echo $product->created_at  ?></td>
                             <td class="action">
